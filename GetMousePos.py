@@ -1,5 +1,6 @@
 import pyautogui
 import time
 
-time.sleep(3)
-print(pyautogui.position())
+if __name__ == "__main__":
+    time.sleep(3)
+    print(pyautogui.position())

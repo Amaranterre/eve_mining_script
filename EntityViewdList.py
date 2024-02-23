@@ -1,11 +1,6 @@
-from PIL import ImageGrab
-import easyocr
-import time
-
-from Resources.WidgetPosition import entityViewListPosition
+from InfoReader import get_image_ocred
 
 entityViewListImageName = "entityViewListImage"
-
 
 # widthDistance =
 # widthName =
@@ -19,75 +14,67 @@ heightFeature = 25
 def GetFeatureCenter(featureFrame):
     pos1 = featureFrame[0]
     pos2 = featureFrame[2]
-    
+
     return [(pos1[0] + pos2[0]) / 2, (pos1[1] + pos2[1]) / 2]
 
-def GetCoodinate(center) :
+
+def GetCoodinate(center):
     row = center[1] / heightFeature
-    
+
     posX = center[0]
-    for i in range(5) :
+    for i in range(5):
         if rangeWidth[i] <= posX <= rangeWidth[i + 1]:
             return [row, i]
-        
-    
 
 
-class entityViewed:
-    def __init__(self, distance, name, typeInner, size, velocity) :
+class EntityViewed:
+    def __init__(self, distance=None, name=None, type_viewed=None, size=None, velocity=None, pos1=None, pos2=None):
         self.distance = distance
         self.name = name
-        self.typeInner = typeInner
+        self.typeInner = type_viewed
         self.size = size
         self.velocity = velocity
+        self.pos1 = pos1
+        self.pos2 = pos2
 
-def getViewListImage():
-    img = ImageGrab.grab(bbox=(entityViewListPosition))
-    img.save(entityViewListImageName + ".png")
-def getViewListData():
-    getViewListImage()
-    
-    reader = easyocr.Reader(['ch_sim','en'])
-    result = reader.readtext(entityViewListImageName + ".png")
+def get_view_list_data():
+    return get_image_ocred(entityViewListImageName)
 
 
 class entityViewdList:
-    
-    
+
     def Update(self):
-        result = getViewListData()
+        result = get_view_list_data()
 
         self.list = []
-        
+
         rowNow = 0
-        entityNow = entityViewed(None, None, None, None, None)
-        
-        for feature in result :
-            
+        entityNow = EntityViewed(None, None, None, None, None)
+
+        for feature in result:
+
             featureContent = feature[1]
             print(featureContent)
             featureFrame = feature[0]
-            
-            
-            
+
             featureCenter = GetFeatureCenter(featureFrame)
             listCoodinate = GetCoodinate(featureCenter)
-            
-            if listCoodinate[1] == 0 :
+
+            if listCoodinate[1] == 0:
                 entityNow.distance = featureContent
-            if listCoodinate[1] == 1 :
+            if listCoodinate[1] == 1:
                 entityNow.name = featureContent
-            if listCoodinate[1] == 2 :
+            if listCoodinate[1] == 2:
                 entityNow.typeInnner = featureContent
-            if listCoodinate[1] == 3 :
+            if listCoodinate[1] == 3:
                 entityNow.size = featureContent
-            if listCoodinate[1] == 4 :
+            if listCoodinate[1] == 4:
                 entityNow.velocity = featureContent
-                
+
             if rowNow != listCoodinate[0]:
-                rowNow =listCoodinate[0]
-                self.list.append(entityNow) 
-        
+                rowNow = listCoodinate[0]
+                self.list.append(entityNow)
+
         self.list.append(entityNow)
 
     def Show(self):

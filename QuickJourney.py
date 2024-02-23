@@ -7,7 +7,7 @@ from Resources.WidgetPosition import jumpButtonPositon
 
 
 
-def getRandomPosition(pos1, pos2) :
+def get_random_position(pos1, pos2) :
     disX = abs(pos1[0] - pos2[0])
     disY = abs(pos1[1] - pos2[1])
     
@@ -18,17 +18,20 @@ def getRandomPosition(pos1, pos2) :
     
     return (x + disX * r, y + disY * r)
 
+
 def click(x, y):
     rTime = random.random() / 2
     pyautogui.moveTo(x, y, rTime)
     pyautogui.click()
 
+
 def clickRandomly(pos1, pos2):
     rTime = random.random()
     time.sleep(rTime)
     
-    rPos = getRandomPosition(pos1, pos2)
+    rPos = get_random_position(pos1, pos2)
     click(*rPos)
+
 
 def clickJumpRandomly():
     pos1 = jumpButtonPositon[0]
@@ -36,27 +39,41 @@ def clickJumpRandomly():
 
     clickRandomly(pos1, pos2)
 
-def setStopFlag():
-    global blStop
-    blStop = True
-    print("inFunction, blstop: ", blStop)
 
+
+def setStopFlag():
+    global stopflag
+    stopflag = not stopflag
+
+    if stopflag:
+        print("关闭")
+    else:
+        print("开启")
 def QuickJourney():
-    global blStop
+    global stopflag
     
-    blStop = False
+    stopflag = False
     # set hot key
-    keyboard.add_hotkey('ctrl+u',setStopFlag)
+
     
-    while blStop == False:
-        time.sleep(2)
+    while stopflag == False:
         # print("clicked")
-        # print("blStop: ",blStop)
+        print("blStop: ",stopflag)
         clickJumpRandomly()
 
+        time.sleep(2)
 if __name__ == "__main__":
     time.sleep(5)
-    QuickJourney()
+
+    keyboard.add_hotkey('ctrl+u',setStopFlag)
+
+    global stopflag
+    stopflag = True
+
+    while True:
+        if not stopflag:
+            QuickJourney()
+        time.sleep(2)
     
     # blStop = False
     # keyboard.add_hotkey('ctrl+z',setStopFlag)
