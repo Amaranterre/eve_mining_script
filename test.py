@@ -1,6 +1,9 @@
+from PIL import ImageGrab
+import easyocr
+import time
+from EntityViewdList import entityViewed
 
-list = []
+reader = easyocr.Reader(['ch_sim','en'])
+result = reader.readtext("ImagesGrabed/test.png")
 
-list[2][3] = 1
-
-print(list)
+print(result)

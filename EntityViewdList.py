@@ -2,7 +2,8 @@ from PIL import ImageGrab
 import easyocr
 import time
 
-entityViewListPosition = [1325,312, 1901, 968]
+from Resources.WidgetPosition import entityViewListPosition
+
 entityViewListImageName = "entityViewListImage"
 
 
@@ -40,14 +41,21 @@ class entityViewed:
         self.size = size
         self.velocity = velocity
 
+def getViewListImage():
+    img = ImageGrab.grab(bbox=(entityViewListPosition))
+    img.save(entityViewListImageName + ".png")
+def getViewListData():
+    getViewListImage()
+    
+    reader = easyocr.Reader(['ch_sim','en'])
+    result = reader.readtext(entityViewListImageName + ".png")
+
+
 class entityViewdList:
-        
+    
+    
     def Update(self):
-        reader = easyocr.Reader(['ch_sim','en'])
-        
-        img = ImageGrab.grab(bbox=(entityViewListPosition))
-        img.save(entityViewListImageName + ".png")
-        result = reader.readtext(entityViewListImageName + ".png")
+        result = getViewListData()
 
         self.list = []
         

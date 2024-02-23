@@ -3,11 +3,13 @@ import time
 import random
 import keyboard
 
-jumpButtonPositon = [[1425,180], [1448, 202]]
+from Resources.WidgetPosition import jumpButtonPositon
+
+
 
 def getRandomPosition(pos1, pos2) :
     disX = abs(pos1[0] - pos2[0])
-    disY = abs(pos1[1] - pos1[1])
+    disY = abs(pos1[1] - pos2[1])
     
     x = min(pos1[0], pos2[0])
     y = min(pos1[1], pos2[1])
@@ -17,19 +19,22 @@ def getRandomPosition(pos1, pos2) :
     return (x + disX * r, y + disY * r)
 
 def click(x, y):
-    pyautogui.moveTo(x, y)
+    rTime = random.random() / 2
+    pyautogui.moveTo(x, y, rTime)
     pyautogui.click()
 
-def clickJumpRandomly():
+def clickRandomly(pos1, pos2):
     rTime = random.random()
     time.sleep(rTime)
     
+    rPos = getRandomPosition(pos1, pos2)
+    click(*rPos)
+
+def clickJumpRandomly():
     pos1 = jumpButtonPositon[0]
     pos2 = jumpButtonPositon[1]
 
-    rPos = getRandomPosition(pos1, pos2)
-
-    click(*rPos)
+    clickRandomly(pos1, pos2)
 
 def setStopFlag():
     global blStop
