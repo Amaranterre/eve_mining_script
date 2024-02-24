@@ -13,10 +13,14 @@ def get_random_position(pos1, pos2) :
     
     x = min(pos1[0], pos2[0])
     y = min(pos1[1], pos2[1])
+
+    xx = int(x + disX * 0.5)
+    yy = int(y + disY * 0.5)
+
+    xx += random.randint(-3, 3)
+    yy += random.randint(-3, 3)
     
-    r = random.random()
-    
-    return (x + disX * r, y + disY * r)
+    return (xx, yy)
 
 
 def click(x, y):

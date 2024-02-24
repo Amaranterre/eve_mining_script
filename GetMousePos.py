@@ -2,5 +2,7 @@ import pyautogui
 import time
 
 if __name__ == "__main__":
-    time.sleep(3)
-    print(pyautogui.position())
+    while True:
+        time.sleep(2)
+        pos = pyautogui.position()
+        print("[", pos.x,", ",pos.y,"]")

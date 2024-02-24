@@ -1,3 +1,5 @@
 capacityImageName = "capacityNow"
 entitySelectedImageName = "entitySelected"
 entityViewListImageName = "entityViewListImage"
+fullScreenImageName = "fullScreen"
+leavingStationImageName = "leavingStation"

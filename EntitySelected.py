@@ -1,7 +1,9 @@
 import time
 
+from ImageProcess.imageProcess import *
 from EntityViewdList import EntityViewed
 from InfoReader import get_entity_selected_result
+from Resources.WidgetPosition import *
 
 entityNoneWord = "没有选择物体"
 
@@ -9,24 +11,40 @@ entityNoneWord = "没有选择物体"
 ###unit: meter
 def alter_to_number(str_now):
     raw_number = ""
-    for ch in str_now:
-        if ch.isdigit() or ch == ".":
-            raw_number += ch
+    str_now = str_now.replace(" ", "")
 
-    number = float(raw_number)
+    print(raw_number)
+
+    flag = True
+    for ch in str_now:
+        if ch == ",":
+            continue
+        if ch.isdigit():
+            raw_number += ch
+        if ch == "." and flag:
+            raw_number += ch
+            flag = False
+
+    if len(raw_number) >= 1 and raw_number[-1] == ".":
+        raw_number += "0"
+    try:
+        number = float(raw_number)
+    except:
+        print("cant convert", raw_number)
+        return -1
 
     unit = str_now[-2:]
     if unit == "km":
         number *= 1000
-
-    print(number)
+    if unit == "AU":
+        return -1
 
     return number
 
 
-def get_entity_selected():
-    result = get_entity_selected_result()
-
+def get_entity_selected(reader):
+    img = crop_screen(*entitySelectedPosition)
+    result = reader.readtext(img)
     entity = EntityViewed()
 
     try:
