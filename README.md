@@ -1,3 +1,4 @@
+# 这个版本目前并不完善，不要随便使用！
 
 
 ## 这是一个eve的自动挖矿脚本：
@@ -25,8 +26,9 @@
 ⭐3.目前只支持在皮尔米特星系使用。
 
 ⭐4.没有加入虚拟机混淆机制。
+# This version hasn't fully completed, use it cautiously
 
-# This is an automatic mining script for EVE:
+## This is an automatic mining script for EVE:
 
 ### Implementation Principle:
 
