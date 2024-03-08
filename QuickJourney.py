@@ -2,7 +2,7 @@ import pyautogui
 import time
 import random
 import keyboard
-
+from    Clicker.click import clickRandomly
 from Resources.WidgetPosition import jumpButtonPositon
 
 
@@ -21,20 +21,6 @@ def get_random_position(pos1, pos2) :
     yy += random.randint(-3, 3)
     
     return (xx, yy)
-
-
-def click(x, y):
-    rTime = random.random() / 2
-    pyautogui.moveTo(x, y, rTime)
-    pyautogui.click()
-
-
-def clickRandomly(pos1, pos2):
-    rTime = random.random()
-    time.sleep(rTime)
-    
-    rPos = get_random_position(pos1, pos2)
-    click(*rPos)
 
 
 def clickJumpRandomly():

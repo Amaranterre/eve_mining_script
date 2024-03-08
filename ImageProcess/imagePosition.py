@@ -1,7 +1,9 @@
 from PIL import ImageGrab
 import ImageProcess
 from PIL import Image
-
+from Resources.WidgetPosition import *
+FirstButtonPosition = [[ 1350 ,  183 ],
+[ 1379 ,  199 ]]
 SecondButtonPosition = [[1382, 173], [1420, 207]]
 ThirdButtonPosition = [[1422, 173], [1454, 206]]
 FourthButtonPosition = [[1454, 170], [1494, 210]]

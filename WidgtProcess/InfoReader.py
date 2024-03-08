@@ -22,9 +22,6 @@ def get_image_ocred(name, reader):
     result = reader.readtext("ImagesGrabbed/" + name + ".png")
     return result
 
-def read_numpy(img, reader):
-    result = reader.readtext(img)
-    return result
 if __name__ == "__main__":
     e = get_image_ocred("example")
 

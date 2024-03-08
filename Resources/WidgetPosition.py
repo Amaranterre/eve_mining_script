@@ -2,8 +2,7 @@ encircleButtonPosition = [[1430, 193], [1440, 203]]
 jumpButtonPositon = [[1430, 187], [1440, 197]]
 stationingButtonPosition = jumpButtonPositon
 reachingButtonPosition = [[1400, 187], [1405, 195]]
-lockingButtonPosition = [[ 1492 ,  177 ],
-[ 1526 ,  208 ]]
+lockingButtonPosition = [[ 1492 ,  177 ],[ 1526 ,  208 ]]
 
 OneToolPosition = [[ 1270 ,  179 ],
 [ 1288 ,  194 ]]
@@ -18,7 +17,7 @@ entityViewListPosition = [[1340, 247], [1901, 968]]
 
 entitySelectedPosition = [[1320, 82], [1897, 211]]
 
-leaveStationPosition = [[1620, 319], [1886, 348]]
+leaveStationPosition = [[1620, 107], [1886, 400]]
 
 
 
@@ -34,3 +33,16 @@ itemInShipPositions = [[[232, 686], [280, 729]],
                        [[473, 806], [516, 848]],
                        [[549, 801], [595, 849]]]
 itemStoragePostion = [[ 664 ,  674 ], [ 1078 ,  931 ]]
+
+SecondButtonPosition = [[1382, 173], [1420, 207]]
+ThirdButtonPosition = [[1422, 173], [1454, 206]]
+FourthButtonPosition = [[1454, 170], [1494, 210]]
+FifthButtonPosition = [[ 1494 ,  180 ],[ 1526 ,  208 ]]
+SixthButtonPosition = [[1527, 173], [1563, 209]]
+
+ToolUsingPosition = [[ 1242 ,  175 ],[ 1312 ,  205 ]]
+
+UAVBox = [[ 363 ,  65 ],
+[ 750 ,  406 ]]
+
+

@@ -1,4 +1,4 @@
-from InfoReader import get_image_ocred
+from WidgtProcess.InfoReader import get_image_ocred
 
 entityViewListImageName = "entityViewListImage"
 
@@ -9,6 +9,7 @@ entityViewListImageName = "entityViewListImage"
 # widthVelocity =
 rangeWidth = [0, 110, 300, 410, 490, 570]
 heightFeature = 25
+
 
 
 def GetFeatureCenter(featureFrame):

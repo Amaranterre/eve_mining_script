@@ -1,8 +1,9 @@
 import time
+import easyocr
 
 from ImageProcess.imageProcess import *
-from EntityViewdList import EntityViewed
-from InfoReader import get_entity_selected_result
+from WidgtProcess.EntityViewdList import EntityViewed
+from WidgtProcess.InfoReader import get_entity_selected_result
 from Resources.WidgetPosition import *
 
 entityNoneWord = "没有选择物体"
@@ -43,13 +44,15 @@ def alter_to_number(str_now):
 
 
 def get_entity_selected(reader):
-    img = crop_screen(*entitySelectedPosition)
+    img = cropped_screen_gn(*entitySelectedPosition, scale=2)
     result = reader.readtext(img)
     entity = EntityViewed()
 
     try:
         name = result[0][1]
         str_entity_distance = result[1][1]
+        print("acc1: ", result[0][2], "result:", result[0][1])
+        print("acc2: ", result[1][2], "result:", result[1][1])
     except IndexError:
         print("entitySelected图像异常")
         return None
@@ -70,12 +73,9 @@ def show(entity):
 
 
 if __name__ == "__main__":
-    e = get_entity_selected()
-    show(e)
+    reader = easyocr.Reader(['ch_sim','en'])
 
-    print("sleeping..")
-    time.sleep(1)
-    print("wake")
-
-    e = get_entity_selected()
-    show(e)
+    while True:
+        e = get_entity_selected(reader)
+        show(e)
+        time.sleep(2)

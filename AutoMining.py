@@ -1,16 +1,20 @@
 import random
 
-import keyboard
 import time
 import pyautogui
 from enum import Enum
 import logging
 
-from QuickJourney import clickRandomly
-from EntitySelected import get_entity_selected
+from Clicker.click import clickRandomly
+from WidgtProcess.EntitySelected import get_entity_selected
+from WidgtProcess.Box import is_inside_box
+from Iterator.iterator import iter_result
 from QuickJourney import get_random_position
 from ImageProcess.imageProcess import *
-from InfoReader import *
+from WidgtProcess.InfoReader import *
+from Clicker.my_keyboard import key_enter
+from WidgtProcess import UAVProcess
+from ImageProcess.imagePosition import FirstButtonPosition
 
 
 from Resources.WidgetPosition import *
@@ -38,7 +42,7 @@ class ShipPosition(Enum):
 def get_ship_position():
     global reader
 
-    img = crop_screen(*leaveStationPosition)
+    img = cropped_screen_gn(*leaveStationPosition)
     result = reader.readtext(img)
 
     def selector(feature):
@@ -55,15 +59,6 @@ def get_ship_position():
 
 
 
-def is_inside_box(pos1, pos2, box_position):
-    top = box_position[0][1]
-    bottom = box_position[1][1]
-    left = box_position[0][0]
-    right = box_position[1][0]
-
-    if left <= pos1[0] <= right and left <= pos2[0] <= right and top <= pos1[1] <= bottom and top <= pos2[1] <= bottom:
-        return True
-    return False
 
 
 def space_del(s):
@@ -74,20 +69,6 @@ def space_del(s):
 def ismineral(content):
     for mineral in WantedMineralList:
         if space_del(content) == mineral:
-            return True
-    return False
-
-
-def iter_result(result, selector):
-    for feature in result:
-        if selector(feature):
-            return feature
-
-
-def click_feature(result, selector):
-    for feature in result:
-        if selector(feature):
-            clickRandomly(pos1=feature[0][0], pos2=feature[0][2])
             return True
     return False
 
@@ -134,7 +115,28 @@ def go_out_station():
     time.sleep(1)
     if get_ship_position() == ShipPosition.OutStation:
         return True
-    clickRandomly(*leaveStationPosition)
+
+    img = cropped_screen_gn(*leaveStationPosition)
+    result = reader.readtext(img)
+
+    def selector(feature):
+        # print(feature[1])
+        if feature[1] == "离站":
+            return True
+        return False
+
+    feature = iter_result(result, selector)
+    if feature is None:
+        return False
+
+    pos1 = [x + y for x,y in zip(feature[0][0], leaveStationPosition[0])]
+    pos2 = [x + y for x,y in zip(feature[0][2], leaveStationPosition[0])]
+
+
+    # [ 1761 ,  308 ]
+    print(pos1, pos2)
+
+    clickRandomly(pos1, pos2)
 
 
 def fetch_mineral():
@@ -148,12 +150,7 @@ def fetch_mineral():
 
 
 
-    entity = get_entity_selected(reader)
-    if entity is None:
-        log("没有选择矿石")
-    else:
-        log("矿石选择成功")
-        return True
+
 
 
     clickRandomly(*mineralListerPosition)
@@ -164,19 +161,28 @@ def fetch_mineral():
         return False
     clickRandomly(feature[0][0], feature[0][2])
 
+    entity = get_entity_selected(reader)
+    if (entity is None) or not("小行星" in entity.name):
+        log("没有选择矿石")
+    else:
+        log("矿石选择成功")
+        return True
+
 
 def get_closed():
     time.sleep(1)
-    clickRandomly(*encircleButtonPosition)
+    clickRandomly(*FirstButtonPosition)
     time.sleep(1)
 
     global reader
     entity = get_entity_selected(reader)
-
-    if entity.distance < 50:
+    try:
+        if entity.distance < 50:
+            return False
+        if entity.distance < toolDistanceMax - 3000:
+            return True
+    except:
         return False
-    if entity.distance < toolDistanceMax - 3000:
-        return True
 
 
 def is_locked():
@@ -236,15 +242,17 @@ def start_mining():
 
 def is_full_loaded(reader):
     time.sleep(1)
-    img = crop_screen(*capacityPositon)
+    img = cropped_screen_gn(*capacityPositon, scale=4)
     # Image.fromarray(img).show()
     result = reader.readtext(img)
     # print(result)
-    if result is None:
+    try:
+        content = result[0][1]
+        raw_number = ""
+        log("content: " + content)
+    except:
         log("找不到货舱容量")
         return True
-    content = result[0][1]
-    raw_number = ""
 
     for ch in content:
         if ch == "/":
@@ -261,22 +269,15 @@ def is_full_loaded(reader):
 
 
 def lauch_tool():
-    keyboard.press_and_release("F1")
-    time.sleep(0.2)
-    keyboard.press_and_release("F2")
-    time.sleep(0.2)
-    keyboard.press_and_release("F")
-
+    global reader
+    key_enter("f1")
+    key_enter("f2")
+    UAVProcess.releaseUAV(reader)
+    key_enter("f")
 
 
 
 def unload():
-    def press_ctrl_a():
-        keyboard.press("ctrl")
-        keyboard.press("a")
-        time.sleep(0.1)  # 等待一段时间，确保按键生效
-        keyboard.release("a")
-        keyboard.release("ctrl")
     def drag(posfrom, posto):
         pyautogui.moveTo(*posfrom, duration=random.random())
         pyautogui.mouseDown()
@@ -292,7 +293,7 @@ def unload():
     time.sleep(0.1)
     pyautogui.mouseUp()
 
-    press_ctrl_a()
+    key_enter("ctrl", "a")
     time.sleep(0.5)
     drag(point_from, point_to)
 
@@ -338,6 +339,7 @@ def go_back_mining_site():
 def init():
     global reader
     global SIFT
+    pyautogui.FAILSAFE = False
     reader = easyocr.Reader(['ch_sim', 'en'])
     SIFT = cv2.SIFT_create()
 
@@ -365,18 +367,37 @@ def debug_automining():
         if get_ship_position() == ShipPosition.OutStation:
             is_full = False
             while True:
+                curtime = time.time()
                 while not fetch_mineral():
+                    if curtime - time.time() > 600:
+                        log("在fetch_mineral 超时")
+                        return
                     pass
                 log("找到一块矿石")
+                curtime = time.time()
                 while not get_closed():
+                    if curtime - time.time() > 600:
+                        log("在get_closed 超时")
+                        return
                     pass
                 while not get_closed():
+                    if curtime - time.time() > 600:
+                        log("在get_closed 超时")
+                        return
                     pass
                 log("已经接近矿石")
+                curtime = time.time()
                 while not locking():
+                    if curtime - time.time() > 600:
+                        log("在locking 超时")
+                        return
                     pass
                 time.sleep(10)
+                curtime = time.time()
                 while not start_mining():
+                    if curtime - time.time() > 600:
+                        log("在start_mining 超时")
+                        return
                     pass
                 log("开始锁定并挖矿")
 
@@ -384,21 +405,31 @@ def debug_automining():
                 lastcapacity = 0
                 cnt = 0
 
+                is_full_loaded(reader)
                 while True:
                     time.sleep(10)
                     #采矿机器人
-                    keyboard.press_and_release('f')
-                    if cnt >= 10:
+                    # keyboard.press_and_release('f')
+                    try:
+                        log("capacity: " + str(capacity))
+                    except:
+                        log("读取不了货舱")
+
+                    if cnt >= 31:
                         log("货舱长时间不变，重启")
+                        UAVProcess.collectUAV(reader)
                         break
 
                     if is_full_loaded(reader):
                         is_full = True
                         log("货舱已满，回家")
+                        UAVProcess.collectUAV(reader)
                         break
                     if get_entity_selected(reader) is None:
                         log("矿石挖完了")
+                        UAVProcess.collectUAV(reader)
                         break
+
                     if lastcapacity == capacity:
                         cnt += 1
                     else:
@@ -427,12 +458,7 @@ def get_logger():
 
 if __name__ == "__main__":
     init()
+    global reader
 
-    # while True:
-    #     while not locking():
-    #         pass
-    #     while not start_mining():
-    #         pass
-
-    debug_automining()
-
+    while True:
+        debug_automining()

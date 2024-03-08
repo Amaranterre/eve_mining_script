@@ -4,7 +4,6 @@ import numpy as np
 from cv2 import cvtColor
 from PIL import ImageGrab
 from PIL import Image
-# from . import imagePosition
 
 ratioMatched = 0.1 # 决定哪一个比率时，图片匹配
 ScalingNumber = 10 # 放大图片；button的图片太小需要放大，而放大会影响descriptor
@@ -29,6 +28,30 @@ def get_full_screen():
     gray_img = np_image2gray(np_img)
 
     return gray_img
+
+
+def cropped_screen_gn(pos1, pos2, scale=1):
+    width = abs(pos1[0] - pos2[0])
+    height = abs(pos1[1] - pos2[1])
+
+    img = ImageGrab.grab(bbox=(*pos1, *pos2))
+
+    if scale != 1:
+        img = scalingimage(img, scale)
+    # img.show()
+
+    np_img = image2numpy(img)
+    gray_img = np_image2gray(np_img)
+
+    return gray_img
+
+
+def screen_ocr(pos1, pos2, reader, is_full_screen = False):
+    if is_full_screen:
+        img = get_full_screen()
+    else:
+        img = cropped_screen_gn(pos1, pos2)
+    return reader.readtext(img)
 
 
 def crop_npimage(img, pos1, pos2):
@@ -71,13 +94,6 @@ def read_screen(reader):
     img = image2gray(img)
     return reading_img(img, reader)
 
-
-
-def crop_screen(pos1, pos2):
-    img = ImageGrab.grab()
-    img = image2gray(img)
-    img = crop_npimage(img, pos1, pos2)
-    return img
 
 def crop_screen_nogray(pos1, pos2):
     img = ImageGrab.grab()
@@ -174,7 +190,7 @@ def collect_red_pixel(img):
 
 if __name__ == "__main__":
     ToolUsingPosition = [[1242, 175], [1312, 205]]
-    img = crop_screen(*ToolUsingPosition)
+    img = cropped_screen_gn(*ToolUsingPosition)
     img = Image.fromarray(img)
 
     # sift = cv2.SIFT_create()
