@@ -25,7 +25,7 @@ def get_inside_UAV(reader):
     set = iter_resultset(result,selector, breaker=breaking)
     return set
 
-def get_outside_UAV(reader):
+def get_outside_UAV(reader, ):
     result = screen_ocr(*UAVBox, reader)
     def selector(feature):
         for name in UAVnameset:
@@ -49,7 +49,9 @@ def get_outside_UAV(reader):
     return set
 
 
-def releaseUAV(reader):
+def releaseUAV(reader,onUAV=True):
+    if not onUAV:
+        return True
     for i in range(5):
         outUAV = get_outside_UAV(reader)
         if len(outUAV) == totalUAVnum:
@@ -61,7 +63,9 @@ def releaseUAV(reader):
     raise ValueError("can't release UAV")
 
 
-def collectUAV(reader):
+def collectUAV(reader, onUAV=True):
+    if not onUAV:
+        return True
     for i in range(5):
         inUAV = get_inside_UAV(reader)
         if len(inUAV) == totalUAVnum:

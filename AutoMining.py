@@ -148,12 +148,8 @@ def fetch_mineral():
             return True
         return False
 
-
-
-
-
-
     clickRandomly(*mineralListerPosition)
+
     result = read_screen(reader)
     feature = iter_result(result, selector)
     if feature is None:
@@ -164,6 +160,7 @@ def fetch_mineral():
     entity = get_entity_selected(reader)
     if (entity is None) or not("小行星" in entity.name):
         log("没有选择矿石")
+        return False
     else:
         log("矿石选择成功")
         return True
@@ -270,9 +267,11 @@ def is_full_loaded(reader):
 
 def lauch_tool():
     global reader
+    global onUAV
     key_enter("f1")
     key_enter("f2")
-    UAVProcess.releaseUAV(reader)
+    print("onUAV: ", onUAV)
+    UAVProcess.releaseUAV(reader, onUAV)
     key_enter("f")
 
 
@@ -336,9 +335,13 @@ def go_back_mining_site():
     return True
 
 
-def init():
+def init(myUAV = True):
     global reader
     global SIFT
+    global onUAV
+
+    onUAV = myUAV
+    print(onUAV)
     pyautogui.FAILSAFE = False
     reader = easyocr.Reader(['ch_sim', 'en'])
     SIFT = cv2.SIFT_create()
@@ -347,8 +350,8 @@ def init():
 
 
 def debug_automining():
-    init()
     global reader
+    global onUAV
     time.sleep(1)
     log("开始debug")
 
@@ -369,33 +372,33 @@ def debug_automining():
             while True:
                 curtime = time.time()
                 while not fetch_mineral():
-                    if curtime - time.time() > 600:
+                    if time.time() - curtime > 600:
                         log("在fetch_mineral 超时")
                         return
                     pass
                 log("找到一块矿石")
                 curtime = time.time()
                 while not get_closed():
-                    if curtime - time.time() > 600:
+                    if time.time() - curtime > 600:
                         log("在get_closed 超时")
                         return
                     pass
                 while not get_closed():
-                    if curtime - time.time() > 600:
+                    if time.time() - curtime > 600:
                         log("在get_closed 超时")
                         return
                     pass
                 log("已经接近矿石")
                 curtime = time.time()
                 while not locking():
-                    if curtime - time.time() > 600:
+                    if time.time() - curtime > 600:
                         log("在locking 超时")
                         return
                     pass
                 time.sleep(10)
                 curtime = time.time()
                 while not start_mining():
-                    if curtime - time.time() > 600:
+                    if time.time() - curtime > 600:
                         log("在start_mining 超时")
                         return
                     pass
@@ -417,17 +420,17 @@ def debug_automining():
 
                     if cnt >= 31:
                         log("货舱长时间不变，重启")
-                        UAVProcess.collectUAV(reader)
+                        UAVProcess.collectUAV(reader, onUAV)
                         break
 
                     if is_full_loaded(reader):
                         is_full = True
                         log("货舱已满，回家")
-                        UAVProcess.collectUAV(reader)
+                        UAVProcess.collectUAV(reader, onUAV)
                         break
                     if get_entity_selected(reader) is None:
                         log("矿石挖完了")
-                        UAVProcess.collectUAV(reader)
+                        UAVProcess.collectUAV(reader, onUAV)
                         break
 
                     if lastcapacity == capacity:
@@ -457,8 +460,8 @@ def get_logger():
 
 
 if __name__ == "__main__":
-    init()
-    global reader
+    #use UAV or not
+    init(myUAV=False)
 
     while True:
         debug_automining()

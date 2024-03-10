@@ -12,7 +12,9 @@ miningSiteListerPosition = [[ 1405 ,  255 ], [ 1431 ,  268 ]]
 mineralListerPosition = [[ 1823 ,  255 ], [ 1851 ,  271 ]]
 
 
-capacityPositon = [[301, 641], [512, 670]]
+capacityPositon = [[ 312 ,  602 ],
+[ 522 ,  632 ]]
+# [301, 641], [512, 670]
 entityViewListPosition = [[1340, 247], [1901, 968]]
 
 entitySelectedPosition = [[1320, 82], [1897, 211]]
